@@ -278,7 +278,8 @@ int execute(char argument[])
 int run(char *arguments[])
 {
 
-	pid_t pid;
+	pid_t pid; //the pid_t data type represents process IDs. You can get the process ID of a process by calling getpid .
+	//The function getppid returns the process ID of the parent of the current process 
 	int lt=0,gt=0,input_file_index=0,output_file_index=0,aoutput_file_index=0,at=0;
 	int status=0,i,j,f,f2,f3;
 	char *input_file;
