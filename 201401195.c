@@ -26,6 +26,9 @@ int first = 1,np=0;
 int main()
 {
 	char cwd1[1024];
+	//The getcwd() function places an absolute pathname of the current working directory in the array pointed to by cwd1, 
+	//and return cwd1. The second argument is the size in bytes of the character array pointed to by the cwd1 argument. 
+	//If cwd1 is a null pointer, the behavior of getcwd() is unspecified.
 	home=getcwd(cwd1,sizeof(cwd1));
 	len1=strlen(home);	
 	prompt();
@@ -35,7 +38,14 @@ int main()
 
 void prompt()
 {
+	/* "utsname" is a structure[struct] containing following members:
+	char  sysname[]  Name of this implementation of the operating system. 
+	char  nodename[] Name of this node within the communications network to which this node is attached, if any. 
+	char  release[]  Current release level of this implementation. 
+	char  version[]  Current version level of this release. 
+	char  machine[]  Name of the hardware type on which the system is running. */
 	struct utsname name;
+	// "uname" gets the name of current system
 	uname(&name);
 	int status=1;
 	char **arguments,**ar2; 
@@ -46,15 +56,20 @@ void prompt()
 		char *getp;	
 		getp=getcwd(cwd,sizeof(cwd));
 		int len2=strlen(getp);
-		printf("%s@%s:",getlogin(),name.sysname);
-		printf("~");
-		int v;
-		for(v=len1;v<len2;v++)
-		{
-			printf("%c",getp[v]);	
-		}
-		printf("$");
-		/*if(strcmp(home,getp)))
+		/* getlogin() returns a pointer to a string containing the name of the user
+		logged in on the controlling terminal of the process,
+		or a NULL pointer if this information cannot be determined. */
+		
+		printf("%s@%s:",getlogin(),name.sysname);    // prints command prompt Eg: "ramya@lenovo"
+		printf("~");                                 
+		int v;                                       
+                                                             
+		for(v=len1;v<len2;v++)                       //
+		{                                            //
+			printf("%c",getp[v]);	             //    All this is about appending command prompt with current location
+		}                                            //
+		printf("$");                                 //
+		/*if(strcmp(home,getp)))   
 		  {
 		//printf("dfs");
 		printf("%s@%s:%s$",getlogin(),name.sysname,getp);
@@ -67,19 +82,19 @@ void prompt()
 
 
 
-		commandline = readl();
-		arguments = splitcommandbysemicolon(commandline);
+		commandline = readl(); // Takes input as a String. Input is the command in terminal Eg: "cd Documents; mkdir newDocument"
+		arguments = splitcommandbysemicolon(commandline); // returns array of strings(commands) seperated by ";"
 		j=0;
 		int o,count=0;;
 		
-		for(j=0;arguments[j]!='\0';j++)
+		for(j=0;arguments[j]!='\0';j++) // for each argument in the array of arguments split by ";"
 		{
-			ar2=splitcommandbypipe(arguments[j]);
-			for(o=0;ar2[o]!=NULL;o++)
+			ar2=splitcommandbypipe(arguments[j]); // argument is further split by pipe ( | ) Eg: "ls -l | grep "\.txt$""
+			for(o=0;ar2[o]!=NULL;o++) // for each part of the argument Eg: here part1 is "ls -l"
 			{
 				if(np==1)
 				{
-				//	printf("firts");
+				//	printf("first");
 					first=1;
 					last=1;
 				}
@@ -113,6 +128,7 @@ void prompt()
 		free(commandline);
 	}	
 }
+// Takes input from user as a String and returns that String. (the command that we write on command prompt)
 char *readl()
 {
 	int i=0,c,bfsize=1024;
@@ -141,6 +157,9 @@ char *readl()
 	}
 }
 
+// splits command with semicolon as delimiter. Returns an array of Strings. 
+// Eg: if commandline="cd Documents; mkdir newDocument; cd newDocument" ,
+//  This function returns an of array of strings {"cd Documents", "mkdir newDocument", "cd newDocument"}
 char **splitcommandbysemicolon(char *commandline)
 {
 	int bfsize =256,i = 0;
@@ -170,6 +189,7 @@ char **splitcommandbysemicolon(char *commandline)
 	tokens[i] = NULL;
 	return tokens;
 }
+// Similar to splitcommandbysemicolon  at line 158. This function splits by pipe ( | ) as delimiter.
 char **splitcommandbypipe(char *commandline)
 {
 	int bfsize =256,i = 0;
@@ -201,6 +221,7 @@ char **splitcommandbypipe(char *commandline)
 	return tokens;
 }
 
+// Similar to splitcommandbysemicolon  at line 158. This function splits by space as delimiter.
 char **splitcommandbyspace(char *commandline)
 {
 	int bfsize =256,i = 0;
@@ -264,6 +285,9 @@ int run(char *arguments[])
 	char *output_file;
 	int pi[2];
 	pipe(pi);
+	//To create a simple pipe with C, we make use of the pipe() system call.
+	//It takes a single argument, which is an array of two integers, and if successful, the array will contain two new file descriptors to be used for the pipeline.
+	//After creating a pipe, the process typically spawns a new process (remember the child inherits open file descriptors).
 	pid = fork();
 
 	if (pid == 0) 
@@ -383,7 +407,7 @@ int runcd(char *arguments[])
 
 		fprintf(stderr, "Error: expected argument to \"cd\" \n");
 
-	else if (chdir(arguments[1]) != 0) 
+	else if (chdir(arguments[1]) != 0)  // Changes directory to  arguments[1] "cd Desktop", arguments[1] is Desktop
 		perror(arguments[1]);
 
 
