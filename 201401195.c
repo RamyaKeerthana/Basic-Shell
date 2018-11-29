@@ -289,13 +289,14 @@ int run(char *arguments[])
 	//It takes a single argument, which is an array of two integers, and if successful, the array will contain two new file descriptors to be used for the pipeline.
 	//After creating a pipe, the process typically spawns a new process (remember the child inherits open file descriptors).
 	pid = fork();
+	//https://www.geeksforgeeks.org/fork-system-call/
 
 	if (pid == 0) 
 	{
 		
 		 if (first == 1 && last == 0 && input == 0) 
 		 {
-			dup2( pi[1], 1 );
+			dup2( pi[1], 1 );//https://www.geeksforgeeks.org/dup-dup2-linux-system-call/
 		 }
 		 else if (first == 0 && last == 0 && input != 0) 
 		 {
